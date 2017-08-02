@@ -1,9 +1,12 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Payment Method Manifest</title>
+    <title>
+      Payment Method Manifest
+    </title>
     <meta charset='utf-8'>
-    <script src='https://www.w3.org/Tools/respec/respec-w3c-common' async class='remove'></script>
+    <script src='https://www.w3.org/Tools/respec/respec-w3c-common' async
+    class='remove'></script>
     <script class='remove'>
       var respecConfig = {
           github: "https://github.com/w3c/payment-method-manifest/",
@@ -38,68 +41,126 @@
     li { margin-top: 0.5em; margin-bottom: 0.5em;}
     </style>
   </head>
- <body>
-   <section id='abstract'>
-     <p>This specification defines the machine-readable manifest file, known as a <dfn data-lt="payment method manifests" id="payment-method-manifest">payment method manifest</dfn>, describing how a <a>payment method</a> participates in the Web Payments ecosystem, and how such files are to be used.
-     </p>
-   </section>
-   <section id='sotd'>
-     <p> This document is being prepared by the <a href="https://www.w3.org/Payments/WG/">Web Payments Working Group</a> as a First Public Working Draft.</p>
-
-             <p>
-               If you wish to make comments regarding this document, please raise
-          them as <a href=
+  <body>
+    <section id='abstract'>
+      <p>
+        This specification defines the machine-readable manifest file, known as
+        a <dfn data-lt="payment method manifests" id=
+        "payment-method-manifest">payment method manifest</dfn>, describing how
+        a <a>payment method</a> participates in the Web Payments ecosystem, and
+        how such files are to be used.
+      </p>
+    </section>
+    <section id='sotd'>
+      <p>
+        This document is being prepared by the <a href=
+        "https://www.w3.org/Payments/WG/">Web Payments Working Group</a> as a
+        First Public Working Draft.
+      </p>
+      <p>
+        If you wish to make comments regarding this document, please raise them
+        as <a href=
         "https://github.com/w3c/payment-method-manifest/issues">GitHub
-          issues</a>. Only send comments by email if you are unable to raise
-          issues on GitHub (see links below). All comments are welcome.
+        issues</a>. Only send comments by email if you are unable to raise
+        issues on GitHub (see links below). All comments are welcome.
+      </p>
+    </section>
+    <section class='informative'>
+      <h2>
+        Introduction
+      </h2>
+      <p>
+        This specification intends to address the following use cases:
+      </p>
+      <ul>
+        <li>
+          <p>
+            The owner of a <a>payment method</a> wishes to authorize only
+            certain parties to distribute <a>payment handlers</a> that are
+            capable of implementing the payment method. In this use case, the
+            browser helps to ensure that for that payment method, the user can
+            only invoke <a>payment handlers</a> from parties authorized by the
+            owner of the payment method.
+          </p>
+        </li>
+        <li>
+          <p>
+            In addition, the owner of a <a>payment method</a> wishes to confirm
+            the authenticity of a particular <a>payment handler</a> (e.g., via
+            a digital signature for that handler).
+          </p>
+        </li>
+        <li>
+          <p>
+            When the user has not yet installed a <a>payment handler</a> for a
+            <a>payment method</a>, the user agent can provide an improved user
+            experience for procuring one.
+          </p>
+        </li>
+      </ul>
+      <p>
+        This is accomplished via the requirement that every <a>payment
+        method</a> whose <a>payment method identifier</a> is a URL will provide
+        a <a>payment method manifest</a> file in JSON format containing two key
+        pieces of information:
+      </p>
+      <ul>
+        <li>
+          <p>
+            any default <a>payment handlers</a> that are associated with this
+            <a>payment method</a>, referenced as <a>absolute-URL strings</a>
+            giving the <a>manifest URL</a> of their <a>web app manifests</a>;
+            and
+          </p>
+        </li>
+        <li>
+          <p>
+            any other <a>origins</a> that are permitted to return payment
+            credentials for this <a>payment method</a>.
+          </p>
+        </li>
+      </ul>
+      <section id='accessing'>
+        <h2>
+          Accessing the Manifest
+        </h2>
+        <p>
+          The resource identified by the <a>payment method identifier</a> URL
+          does not directly contain the machine-readable <a>payment method
+          manifest</a>. It is often a generic URL (such as
+          "<code>https://alicepay.com/</code>") which is more suitable for
+          human-readable content. Instead, a HTTP Link header is used to direct
+          user agents seeking out the <a>payment method manifest</a> toward
+          another location. [[!RFC5988]]
         </p>
-
-   </section>
-   <section class='informative'>
-     <h2>Introduction</h2>
-    <p>This specification intends to address the following use cases:</p>
-    <ul>
-     <li>
-      <p>The owner of a <a>payment method</a> wishes to authorize only certain parties to distribute <a>payment handlers</a> that are capable of implementing the payment method. In this use case, the
-browser helps to ensure that for that payment method, the user can only invoke <a>payment handlers</a> from
-parties authorized by the owner of the payment method.</p>
-     <li>
-      <p>In addition, the owner of a <a>payment method</a> wishes to confirm the authenticity of a
-particular <a>payment handler</a> (e.g., via a digital signature for that handler).</p>
-     <li>
-      <p>When the user has not yet installed a <a>payment handler</a> for a <a>payment method</a>, the user agent
-can provide an improved user experience for procuring one.</p>
-    </ul>
-    <p>This is accomplished via the requirement that every <a>payment method</a> whose <a>payment method identifier</a> is a URL will provide a <a>payment method manifest</a> file in JSON
-format containing two key pieces of information:</p>
-    <ul>
-     <li>
-      <p>any default <a>payment handlers</a> that are associated with this <a>payment method</a>, referenced as <a>absolute-URL strings</a> giving the <a>manifest URL</a> of their <a>web app manifests</a>; and</p>
-     <li>
-      <p>any other <a>origins</a> that are permitted to return payment credentials for this <a>payment method</a>.</p>
-    </ul>
-    <section id='accessing'>
-	<h2>Accessing the Manifest</h2>	 
-    <p>The resource identified by the <a>payment method identifier</a> URL does not directly contain the
-machine-readable <a>payment method manifest</a>. It is often a generic URL (such as
-"<code>https://alicepay.com/</code>") which is more suitable for human-readable content. Instead, a
-HTTP Link header is used to direct user agents seeking out the <a>payment method manifest</a> toward
-another location. [[!RFC5988]]</p>
-    <p>For an example <a>payment method</a> AlicePay, with <a>payment method identifier</a> "<code>https://alicepay.com/</code>", a user agent might issue a request to that <a>payment method identifier</a> URL as follows:</p>
-<pre>HEAD / HTTP/2
+        <p>
+          For an example <a>payment method</a> AlicePay, with <a>payment method
+          identifier</a> "<code>https://alicepay.com/</code>", a user agent
+          might issue a request to that <a>payment method identifier</a> URL as
+          follows:
+        </p>
+        <pre>HEAD / HTTP/2
 Host: alicepay.com
 User-Agent: Mellblomenator/9000
 </pre>
-    <p>The server would then respond:</p>
-<pre>HTTP/2 204
-Link: &lt;/pay/payment-manifest.json>; rel="payment-method-manifest"
+        <p>
+          The server would then respond:
+        </p>
+        <pre>HTTP/2 204
+Link: &lt;/pay/payment-manifest.json&gt;; rel="payment-method-manifest"
 </pre>
-    </section>
-    <section id="manifest-example">
-      <h2>Example manifest file</h2>
-    <p>Continuing our example from <a href="#accessing">§1.1 Accessing the manifest</a>, the AlicePay <a>payment method</a> could provide the
-following <a>payment method manifest</a> file at <code>https://alicepay.com/pay/payment-manifest.json</code>:</p>
-<pre class="example">
+      </section>
+      <section id="manifest-example">
+        <h2>
+          Example manifest file
+        </h2>
+        <p>
+          Continuing our example from <a href="#accessing">§1.1 Accessing the
+          manifest</a>, the AlicePay <a>payment method</a> could provide the
+          following <a>payment method manifest</a> file at
+          <code>https://alicepay.com/pay/payment-manifest.json</code>:
+        </p>
+        <pre class="example">
 {
   "default_applications": ["https://alicepay.com/pay/app/webappmanifest.json"],
   "supported_origins": [
@@ -108,347 +169,786 @@ following <a>payment method manifest</a> file at <code>https://alicepay.com/pay/
   ]
 }
 </pre>
-    <p>This indicates that, if the user agent does not have a <a>payment handler</a> for AlicePay installed, it
-can locate one by consulting the <a>web app manifest</a> at
-"<code>https://alicepay.com/pay/app/webappmanifest.json</code>".</p>
-    <p>It also indicates that, apart from this default payment app, AlicePay also allows <a>payment handlers</a> hosted at the two indicated <a>origins</a> to be used for AlicePay. This means that if the user agent
-ever encounters payment apps hosted at those origins claiming support for AlicePay, it can allow
-them to act as payment apps for the AlicePay <a>payment method</a>.</p>
-    <p>The manifest file could also omit the "<code>supported_origins</code>" key, if no third-party <a>payment handlers</a> are supported for the <a>payment method</a> in question, or it could use the value
-"<code>*</code>" instead of an array of <a>origins</a>, to indicate that any third party is allowed to
-support the payment method.</p>
+        <p>
+          This indicates that, if the user agent does not have a <a>payment
+          handler</a> for AlicePay installed, it can locate one by consulting
+          the <a>web app manifest</a> at
+          "<code>https://alicepay.com/pay/app/webappmanifest.json</code>".
+        </p>
+        <p>
+          It also indicates that, apart from this default payment app, AlicePay
+          also allows <a>payment handlers</a> hosted at the two indicated
+          <a>origins</a> to be used for AlicePay. This means that if the user
+          agent ever encounters payment apps hosted at those origins claiming
+          support for AlicePay, it can allow them to act as payment apps for
+          the AlicePay <a>payment method</a>.
+        </p>
+        <p>
+          The manifest file could also omit the
+          "<code>supported_origins</code>" key, if no third-party <a>payment
+          handlers</a> are supported for the <a>payment method</a> in question,
+          or it could use the value "<code>*</code>" instead of an array of
+          <a>origins</a>, to indicate that any third party is allowed to
+          support the payment method.
+        </p>
+      </section>
     </section>
-</section>
-   <section id='format'>
-     <h2>
-       Manifest Format
-       </h2>
-   <p>A <dfn data-lt="valid|validity" id="valid-payment-method-manifest">valid payment method manifest</dfn> file is a <a>UTF-8 encoded</a> file containing contents parseable as a JSON object. The resulting JSON object must contain
-at most two items, with the possible keys "<code>default_applications</code>" and
-"<code>supported_origins</code>".</p>
-   <p>The value of the <code>default_applications</code> key, if present, must be a non-empty JSON array.
-Each item in the array must be an <a>absolute-URL string</a> such that the resulting parsed <a>URL</a>'s <a>scheme</a> is "<code>https</code>".</p>
-   <p>The value of the <code>supported_origins</code> key, if present, must be either the string
-"<code>*</code>", or a non-empty JSON array. In the latter case, each item in the array must be an <a>absolute-URL string</a> that represents an HTTPS <a>origin</a>. Formally, the string must be equal to
-the <a>serialization</a> of the resulting parsed <a>URL</a>'s <a>origin</a>.</p>
-   <p>Web developers must ensure that all of their <a>payment method manifests</a> are <a>valid</a>.</p>
-   <p class="note" role="note">As with all conformance requirements, these are web-developer facing, and not
-implementer-facing. The exact processing model (given in <a href="#processing-model">§3 Processing model</a>) governs how
-implementers process all <a>payment method manifest</a> files, including invalid ones.</p>
-   <div class="example" id="example-invalid-manifest">
-    The following <a>payment method manifest</a> is not <a>valid</a>, but the currently-specified processing
-  model algorithms will still accept it: 
-<pre>
+    <section id='format'>
+      <h2>
+        Manifest Format
+      </h2>
+      <p>
+        A <dfn data-lt="valid|validity" id=
+        "valid-payment-method-manifest">valid payment method manifest</dfn>
+        file is a <a>UTF-8 encoded</a> file containing contents parseable as a
+        JSON object. The resulting JSON object must contain at most two items,
+        with the possible keys "<code>default_applications</code>" and
+        "<code>supported_origins</code>".
+      </p>
+      <p>
+        The value of the <code>default_applications</code> key, if present,
+        must be a non-empty JSON array. Each item in the array must be an
+        <a>absolute-URL string</a> such that the resulting parsed <a>URL</a>'s
+        <a>scheme</a> is "<code>https</code>".
+      </p>
+      <p>
+        The value of the <code>supported_origins</code> key, if present, must
+        be either the string "<code>*</code>", or a non-empty JSON array. In
+        the latter case, each item in the array must be an <a>absolute-URL
+        string</a> that represents an HTTPS <a>origin</a>. Formally, the string
+        must be equal to the <a>serialization</a> of the resulting parsed
+        <a>URL</a>'s <a>origin</a>.
+      </p>
+      <p>
+        Web developers must ensure that all of their <a>payment method
+        manifests</a> are <a>valid</a>.
+      </p>
+      <p class="note" role="note">
+        As with all conformance requirements, these are web-developer facing,
+        and not implementer-facing. The exact processing model (given in
+        <a href="#processing-model">§3 Processing model</a>) governs how
+        implementers process all <a>payment method manifest</a> files,
+        including invalid ones.
+      </p>
+      <div class="example" id="example-invalid-manifest">
+        The following <a>payment method manifest</a> is not <a>valid</a>, but
+        the currently-specified processing model algorithms will still accept
+        it:
+        <pre>
 {
   "default_applications": ["https://alicepay.com/pay/app/webappmanifest.json"],
   "created_by": "Alice",
   "created_in": "Wonderland"
 }
 </pre>
-    <p>This could change in the future, for example if the processing model later expands to define a
-  meaning for a new standard "<code>created_by</code>" key that requires it to be an object instead
-      of a string. To avoid situations like this, web developers are best served by ensuring <a>validity</a> of their <a>payment method manifests</a>, and thus avoiding any unpleasant surprises.</p>
-    </div>
-</section>
-   <section id='processing-model'>
-     <h2>
-       Processing Model
-       </h2>
-     <section id='ingest'>
-       <h2>
-	 Ingesting payment method manifests
-	 </h2>
-   <p>A user agent is expected to receive, from various sources, a list of <a>payment method identifiers</a>.
-A notable source is as the first parameter to the <code class="idl"><a>PaymentRequest</a></code> constructor, but other sources are
-possible, in a user-agent specific manner.</p>
-   <p class="example" id="example-local-scanning">A user agent could scan locally-installed <a>payment handlers</a> on the device to see which <a>payment methods</a> they support.</p>
-   <p class="example" id="example-out-of-band">A user agent could have built-in support for certain <a>payment methods</a> as a result of out-of-band arrangements.</p>
-   <p>Given such a list of <a>payment method identifiers</a> <var>identifiers</var>, the user agent may at any time
-run the following steps, to <dfn id="ingest-payment-method-manifests">ingest payment method manifests</dfn>:</p>
-   <ol>
-    <li>
-     <p><a>Fetch payment method manifests</a>, given <var>identifiers</var>, and wait for this to asynchronously
- complete with <var>manifestsMap</var>. If the result is failure, return.</p>
-    <li>
-     <p><a>For each</a> <var>identifier</var> → <var>manifest</var> of <var>manifestsMap</var>:</p>
-     <ol>
-      <li>
-       <p>Let <var>parsed</var> be the result of <a>validating and parsing</a> <var>manifest</var>. If this
- returns failure, <a>continue</a>.</p>
-      <li>
-       <p><a>For each</a> <var>url</var> in <var>parsed</var>’s <a>default applications</a>:</p>
-       <ol>
-        <li>
-         <p><a>Fetch the web app manifest</a> at <var>url</var>,
- and wait for it to asynchronously complete with <var>webAppManifestString</var>. If the result is
- failure, <a>continue</a>.</p>
-        <li>
-         <p>Let <var>webAppManifest</var> be the result of running the <a>steps for processing a web app manifest</a> given <var>webAppManifestString</var>.</p>
-         <p class="note" role="note">The <a>steps for processing a web app manifest</a> are very forgiving and will
- return empty objects or objects missing crucial fields instead of failing. User agents will
- need to separately validate the <a>processed web app manifest</a> to ensure it contains enough
- data for their purposes in the next step.</p>
-        <li>
-         <p>In a user-agent-specific way, use the resulting <a>processed web app manifest</a> <var>webAppManifest</var> to install any applicable <a>payment handlers</a> for the <a>payment method</a> identified by <var>identifier</var>.</p>
-         <p class="note" role="note">In the future, the plan is for there to be a user-agent-independent way to
- use the resulting <a>processed web app manifest</a>, by consulting its <code>serviceworker</code> field and using that to install a web-based <a>payment handler</a> conforming to the Payment Handler API [[payment-handler]]</p>
-       </ol>
-      <li>
-       <p>Associate the <a>supported origins</a> to <var>identifier</var> so that the
- user agent can use it in the future to determine what third-party <a>payment handlers</a> can be
- displayed for the <a>payment method</a> identified by <var>identifier</var>.</p>
-     </ol>
-   </ol>
-  </section>
-  <section id='fetch-pmm'>
-    <h2>
-      Fetching payment method manifests
-    </h2>
-   <p>To <dfn id="fetch-payment-method-manifests">fetch payment method manifests</dfn>, given a <a>list</a> of <a>JavaScript strings</a> <var>supportedMethods</var>, perform the following steps. This algorithm will asynchronously complete with
-a <a>map</a> (possibly empty) from <a>URLs</a> to <a>byte sequences</a>, mapping <a>payment method identifiers</a> to the contents of the corresponding manifest.</p>
-   <ol>
-    <li>
-     <p>Let <var>identifierURLs</var> be an empty <a>list</a>.</p>
-    <li>
-     <p><a>For each</a> <var>string</var> of <var>supportedMethods</var>:</p>
-     <ol>
-      <li>
-       <p>Let <var>identifierURL</var> be the result of <a>basic URL parsing</a> <var>string</var>. If the
- result is failure, <a>continue</a>.</p>
-      <li>
-       <p>If <var>identifierURL</var>’s <a>scheme</a> is not "<code>https</code>", <a>continue</a>.</p>
-      <li>
-       <p><a>List append</a> <var>identifierURL</var> to <var>identifierURLs</var>.</p>
-     </ol>
-    <li>
-     <p>Let <var>manifestsMap</var> be an empty <a>map</a>.</p>
-    <li>
-     <p><a>For each</a> <var>identifierURL</var> of <var>identifierURLs</var>:</p>
-     <ol>
-      <li>
-       <p>Let <var>identifierRequest</var> be a new <a>request</a> whose <a>method</a> is `<code>HEAD</code>`, <a>request url</a> is <var>identifierURL</var>, <a>client</a> is null, <a>credentials mode</a> is
- "<code>omit</code>", and <a>redirect mode</a> is "<code>error</code>".</p>
-      <li>
-       <p><a>Fetch</a> <var>identifierRequest</var>. To <a>process response</a> with the <a>response</a> <var>identifierResponse</var>:</p>
-       <ol>
-        <li>
-         <p>If <var>identifierResponse</var> is a <a>network error</a> or <var>identifierResponse</var>’s <a>status</a> is not an <a>ok status</a>, <a>continue</a>.</p>
-        <li>
-         <p>Let <var>linkHeaders</var> be the result of <a>extracting header list values</a> given `<code>Link</code>` and <var>identifierResponse</var>’s <a>header list</a>.</p>
-        <li>
-         <p>Let <var>manifestURLString</var> be null.</p>
-        <li>
-         <p><a>For each</a> <var>linkHeader</var> of <var>linkHeaders</var>:</p>
-         <ol>
+        <p>
+          This could change in the future, for example if the processing model
+          later expands to define a meaning for a new standard
+          "<code>created_by</code>" key that requires it to be an object
+          instead of a string. To avoid situations like this, web developers
+          are best served by ensuring <a>validity</a> of their <a>payment
+          method manifests</a>, and thus avoiding any unpleasant surprises.
+        </p>
+      </div>
+    </section>
+    <section id='processing-model'>
+      <h2>
+        Processing Model
+      </h2>
+      <section id='ingest'>
+        <h2>
+          Ingesting payment method manifests
+        </h2>
+        <p>
+          A user agent is expected to receive, from various sources, a list of
+          <a>payment method identifiers</a>. A notable source is as the first
+          parameter to the <code class="idl"><a>PaymentRequest</a></code>
+          constructor, but other sources are possible, in a user-agent specific
+          manner.
+        </p>
+        <p class="example" id="example-local-scanning">
+          A user agent could scan locally-installed <a>payment handlers</a> on
+          the device to see which <a>payment methods</a> they support.
+        </p>
+        <p class="example" id="example-out-of-band">
+          A user agent could have built-in support for certain <a>payment
+          methods</a> as a result of out-of-band arrangements.
+        </p>
+        <p>
+          Given such a list of <a>payment method identifiers</a>
+          <var>identifiers</var>, the user agent may at any time run the
+          following steps, to <dfn id="ingest-payment-method-manifests">ingest
+          payment method manifests</dfn>:
+        </p>
+        <ol>
           <li>
-           <p>Parse <var>linkHeader</var> according to the <code>link-value</code> production. If it cannot be
- parsed, <a>continue</a>. [[!RFC5988]]</p>
+            <p>
+              <a>Fetch payment method manifests</a>, given
+              <var>identifiers</var>, and wait for this to asynchronously
+              complete with <var>manifestsMap</var>. If the result is failure,
+              return.
+            </p>
+          </li>
           <li>
-           <p>If the parsed header contains a parameter whose name is an <a>ASCII case-insensitive</a> match
- for the string "<code>rel</code>" and whose value is an <a>ASCII case-insensitive</a> match
- for the string "<code>payment-method-manifest</code>", then set <var>manifestURLString</var> to the
- string given by the <code>URI-Reference</code> production in the parsed header, and <a>break</a>.</p>
-         </ol>
-        <li>
-         <p>If <var>manifestURLString</var> is not null, then:</p>
-         <ol>
+            <p>
+              <a>For each</a> <var>identifier</var> → <var>manifest</var> of
+              <var>manifestsMap</var>:
+            </p>
+            <ol>
+              <li>
+                <p>
+                  Let <var>parsed</var> be the result of <a>validating and
+                  parsing</a> <var>manifest</var>. If this returns failure,
+                  <a>continue</a>.
+                </p>
+              </li>
+              <li>
+                <p>
+                  <a>For each</a> <var>url</var> in <var>parsed</var>’s
+                  <a>default applications</a>:
+                </p>
+                <ol>
+                  <li>
+                    <p>
+                      <a>Fetch the web app manifest</a> at <var>url</var>, and
+                      wait for it to asynchronously complete with
+                      <var>webAppManifestString</var>. If the result is
+                      failure, <a>continue</a>.
+                    </p>
+                  </li>
+                  <li>
+                    <p>
+                      Let <var>webAppManifest</var> be the result of running
+                      the <a>steps for processing a web app manifest</a> given
+                      <var>webAppManifestString</var>.
+                    </p>
+                    <p class="note" role="note">
+                      The <a>steps for processing a web app manifest</a> are
+                      very forgiving and will return empty objects or objects
+                      missing crucial fields instead of failing. User agents
+                      will need to separately validate the <a>processed web app
+                      manifest</a> to ensure it contains enough data for their
+                      purposes in the next step.
+                    </p>
+                  </li>
+                  <li>
+                    <p>
+                      In a user-agent-specific way, use the resulting
+                      <a>processed web app manifest</a>
+                      <var>webAppManifest</var> to install any applicable
+                      <a>payment handlers</a> for the <a>payment method</a>
+                      identified by <var>identifier</var>.
+                    </p>
+                    <p class="note" role="note">
+                      In the future, the plan is for there to be a
+                      user-agent-independent way to use the resulting
+                      <a>processed web app manifest</a>, by consulting its
+                      <code>serviceworker</code> field and using that to
+                      install a web-based <a>payment handler</a> conforming to
+                      the Payment Handler API [[payment-handler]]
+                    </p>
+                  </li>
+                </ol>
+              </li>
+              <li>
+                <p>
+                  Associate the <a>supported origins</a> to
+                  <var>identifier</var> so that the user agent can use it in
+                  the future to determine what third-party <a>payment
+                  handlers</a> can be displayed for the <a>payment method</a>
+                  identified by <var>identifier</var>.
+                </p>
+              </li>
+            </ol>
+          </li>
+        </ol>
+      </section>
+      <section id='fetch-pmm'>
+        <h2>
+          Fetching payment method manifests
+        </h2>
+        <p>
+          To <dfn id="fetch-payment-method-manifests">fetch payment method
+          manifests</dfn>, given a <a>list</a> of <a>JavaScript strings</a>
+          <var>supportedMethods</var>, perform the following steps. This
+          algorithm will asynchronously complete with a <a>map</a> (possibly
+          empty) from <a>URLs</a> to <a>byte sequences</a>, mapping <a>payment
+          method identifiers</a> to the contents of the corresponding manifest.
+        </p>
+        <ol>
           <li>
-           <p>Let <var>manifestURL</var> be the result of <a>basic URL parsing</a> <var>manifestURLString</var> with base URL given by <var>identifierResponse</var>’s <a>response url</a>. If the
- result is failure, <a>continue</a>.</p>
+            <p>
+              Let <var>identifierURLs</var> be an empty <a>list</a>.
+            </p>
+          </li>
           <li>
-           <p>If <var>manifestURL</var>’s <a>scheme</a> is not "<code>https</code>", <a>continue</a>.</p>
+            <p>
+              <a>For each</a> <var>string</var> of <var>supportedMethods</var>:
+            </p>
+            <ol>
+              <li>
+                <p>
+                  Let <var>identifierURL</var> be the result of <a>basic URL
+                  parsing</a> <var>string</var>. If the result is failure,
+                  <a>continue</a>.
+                </p>
+              </li>
+              <li>
+                <p>
+                  If <var>identifierURL</var>’s <a>scheme</a> is not
+                  "<code>https</code>", <a>continue</a>.
+                </p>
+              </li>
+              <li>
+                <p>
+                  <a>List append</a> <var>identifierURL</var> to
+                  <var>identifierURLs</var>.
+                </p>
+              </li>
+            </ol>
+          </li>
           <li>
-           <p>Let <var>manifestRequest</var> be a new <a>request</a> whose <a>request url</a> is <var>manifestURL</var>, <a>client</a> is null, <a>credentials mode</a> is
- "<code>omit</code>", and <a>redirect mode</a> is "<code>error</code>".</p>
+            <p>
+              Let <var>manifestsMap</var> be an empty <a>map</a>.
+            </p>
+          </li>
           <li>
-           <p><a>Fetch</a> <var>manifestRequest</var>. To <a>process response end-of-body</a> with the <a>response</a> <var>manifestResponse</var>:</p>
-           <ol>
-            <li>
-             <p>If <var>manifestResponse</var> is a <a>network error</a> or <var>manifestResponse</var>’s <a>status</a> is not an <a>ok status</a>, <a>continue</a>.</p>
-            <li>
-             <p>Let <var>body</var> be <var>manifestResponse</var>’s <a>body</a>.</p>
-            <li>
-             <p>If <var>body</var> is null, <a>continue</a>.</p>
-            <li>
-             <p>Let <var>reader</var> be the result of <a>getting a reader</a> from <var>body</var>.</p>
-            <li>
-             <p>Let <var>promise</var> be the result of <a>reading all bytes</a> from <var>body</var> with <var>reader</var>.</p>
-            <li>
-             <p><a>Upon fulfillment</a> of <var>promise</var> with a <a>byte sequence</a> <var>bytes</var>, <a>map set</a> <var>manifestsMap</var>[<var>identifierURL</var>] to <var>bytes</var>.</p>
-           </ol>
-         </ol>
-       </ol>
-     </ol>
-    <li>
-     <p>Once all ongoing <a>fetch</a> algorithms initiated by the above steps are complete, including the
- specified <a>process response</a> and <a>process response end-of-body</a> steps, asynchronously
- complete this algorithm with <var>manifestsMap</var>.</p>
-   </ol>
-  </section>
-  <section>
-    <h2>
-      <dfn data-lt="validating and parsing" id="validating-and-parsing">Validating and parsing payment method manifests</dfn>
-    </h2>
-   <p>A <dfn id="parsed-payment-method-manifest">parsed payment method manifest</dfn> is a <a>struct</a> containing two fields:</p>
-   <dl>
-    <dt><dfn>default applications</dfn>
-    <dd>
-     <p>An <a>ordered set</a> of <a>URLs</a>, possibly empty</p>
-    <dt><dfn id="parsed-payment-method-manifest-supported-origins">supported origins</dfn>
-    <dd>
-     <p>Either the string "<code>*</code>", or an <a>ordered set</a> of <a>origins</a></p>
-   </dl>
-   <p>To <dfn id="validate-and-parse-the-payment-method-manifest">validate and parse</dfn> a <a>byte sequence</a> <var>bytes</var> purporting to contain a payment method manifest, perform the following
-steps. The result will either be a <a>parsed payment method manifest</a>, or failure.</p>
-   <ol>
-    <li>
-     <p>Let <var>string</var> be the result of <a>UTF-8 decoding</a> <var>bytes</var>.</p>
-    <li>
-     <p>Let <var>parsed</var> be the result of invoking the initial value of the <code class="idl"><a>parse()</a></code> method of
- the <code class="idl"><a>%JSON%</a></code> object on <var>string</var>, in a user-agent defined <a>JavaScript realm</a>. If this throws
- an exception, return failure.</p>
-    <li>
-     <p>If <a>Type</a>(<var>parsed</var>) is not Object, return failure.</p>
-    <li>
-     <p>Let <var>defaultApps</var> be an empty <a>ordered set</a>.</p>
-    <li>
-     <p>Let <var>defaultAppsValue</var> be <a>Get</a>(<var>parsed</var>, "default_applications").</p>
-    <li>
-     <p>If <var>defaultAppsValue</var> is not undefined:</p>
-     <ol>
-      <li>
-       <p>If <a>IsArray</a>(<var>defaultAppsValue</var>) is false, return failure.</p>
-      <li>
-       <p>Let <var>defaultAppsList</var> be <a>CreateListFromArrayLike</a>(<var>defaultAppsValue</var>,
- « String »). If this throws an exception, return failure.</p>
-      <li>
-       <p>If the <a>list size</a> of <var>defaultAppsList</var> is 0, return failure.</p>
-      <li>
-       <p><a>For each</a> <var>defaultAppString</var> in <var>defaultAppsList</var>:</p>
-       <ol>
-        <li>
-         <p>Let <var>defaultAppURL</var> be the result of <a>basic URL parsing</a> <var>defaultAppString</var>. If the result is failure, return failure.</p>
-        <li>
-         <p>If <var>defaultAppURL</var>’s <a>scheme</a> is not "<code>https</code>", return failure.</p>
-        <li>
-         <p><a>Set append</a> <var>defaultAppURL</var> to <var>defaultApps</var>.</p>
-       </ol>
-     </ol>
-    <li>
-     <p>Let <var>supportedOrigins</var> be an empty <a>ordered set</a>.</p>
-    <li>
-     <p>Let <var>supportedOriginsValue</var> be <a>Get</a>(<var>parsed</var>, "supported_origins").</p>
-    <li>
-     <p>If <var>supportedOriginsValue</var> is "<code>*</code>", set <var>supportedOrigins</var> to "<code>*</code>".</p>
-    <li>
-     <p>Otherwise, if <var>supportedOriginsValue</var> is not undefined:</p>
-     <ol>
-      <li>
-       <p>If <a>IsArray</a>(<var>supportedOriginsValue</var>) is false, return failure.</p>
-      <li>
-       <p>Let <var>supportedOriginsList</var> be <a>CreateListFromArrayLike</a>(<var>supportedOriginsValue</var>, « String »). If this throws
- an exception, return failure.</p>
-      <li>
-       <p>If the <a>list size</a> of <var>supportedOriginsList</var> is 0, return failure.</p>
-      <li>
-       <p><a>For each</a> <var>supportedOriginString</var> in <var>supportedOriginsList</var>:</p>
-       <ol>
-        <li>
-         <p>Let <var>supportedOriginURL</var> be the result of <a>basic URL parsing</a> <var>supportedOriginString</var>. If the result is failure, return failure.</p>
-        <li>
-         <p>If <var>supportedOriginURL</var>’s <a>scheme</a> is not "<code>https</code>", return failure.</p>
-        <li>
-         <p>If <var>supportedOriginURL</var>’s <a>username</a> or <a>password</a> are not the empty string,
- return failure.</p>
-        <li>
-         <p>If <var>supportedOriginURL</var>’s <a>path</a>'s <a>list size</a> is not 0, return failure.</p>
-        <li>
-         <p>If <var>supportedOriginURL</var>’s <a>query</a> or <a>fragment</a> are not null, return failure.</p>
-        <li>
-         <p><a>Set append</a> <var>supportedOriginURL</var>’s <a>origin</a> to <var>supportedOrigins</var>.</p>
-       </ol>
-     </ol>
-    <li>
-     <p>Return a new <a>parsed payment method manifest</a> with <a>default applications</a> given by <var>defaultApps</var> and <a>supported origins</a> given by <var>supportedOrigins</var>.</p>
-   </ol>
-   <div class="note" role="note">
-     Empty arrays for "<code>default_applications</code>" or "<code>supported_origins</code>"
-  will cause parsing to fail. That is, this is not a <a>valid payment method manifest</a>, and will
-     be rejected by the above algorithm:
-<pre>
+            <p>
+              <a>For each</a> <var>identifierURL</var> of
+              <var>identifierURLs</var>:
+            </p>
+            <ol>
+              <li>
+                <p>
+                  Let <var>identifierRequest</var> be a new <a>request</a>
+                  whose <a>method</a> is `<code>HEAD</code>`, <a>request
+                  url</a> is <var>identifierURL</var>, <a>client</a> is null,
+                  <a>credentials mode</a> is "<code>omit</code>", and
+                  <a>redirect mode</a> is "<code>error</code>".
+                </p>
+              </li>
+              <li>
+                <p>
+                  <a>Fetch</a> <var>identifierRequest</var>. To <a>process
+                  response</a> with the <a>response</a>
+                  <var>identifierResponse</var>:
+                </p>
+                <ol>
+                  <li>
+                    <p>
+                      If <var>identifierResponse</var> is a <a>network
+                      error</a> or <var>identifierResponse</var>’s
+                      <a>status</a> is not an <a>ok status</a>,
+                      <a>continue</a>.
+                    </p>
+                  </li>
+                  <li>
+                    <p>
+                      Let <var>linkHeaders</var> be the result of <a>extracting
+                      header list values</a> given `<code>Link</code>` and
+                      <var>identifierResponse</var>’s <a>header list</a>.
+                    </p>
+                  </li>
+                  <li>
+                    <p>
+                      Let <var>manifestURLString</var> be null.
+                    </p>
+                  </li>
+                  <li>
+                    <p>
+                      <a>For each</a> <var>linkHeader</var> of
+                      <var>linkHeaders</var>:
+                    </p>
+                    <ol>
+                      <li>
+                        <p>
+                          Parse <var>linkHeader</var> according to the
+                          <code>link-value</code> production. If it cannot be
+                          parsed, <a>continue</a>. [[!RFC5988]]
+                        </p>
+                      </li>
+                      <li>
+                        <p>
+                          If the parsed header contains a parameter whose name
+                          is an <a>ASCII case-insensitive</a> match for the
+                          string "<code>rel</code>" and whose value is an
+                          <a>ASCII case-insensitive</a> match for the string
+                          "<code>payment-method-manifest</code>", then set
+                          <var>manifestURLString</var> to the string given by
+                          the <code>URI-Reference</code> production in the
+                          parsed header, and <a>break</a>.
+                        </p>
+                      </li>
+                    </ol>
+                  </li>
+                  <li>
+                    <p>
+                      If <var>manifestURLString</var> is not null, then:
+                    </p>
+                    <ol>
+                      <li>
+                        <p>
+                          Let <var>manifestURL</var> be the result of <a>basic
+                          URL parsing</a> <var>manifestURLString</var> with
+                          base URL given by <var>identifierResponse</var>’s
+                          <a>response url</a>. If the result is failure,
+                          <a>continue</a>.
+                        </p>
+                      </li>
+                      <li>
+                        <p>
+                          If <var>manifestURL</var>’s <a>scheme</a> is not
+                          "<code>https</code>", <a>continue</a>.
+                        </p>
+                      </li>
+                      <li>
+                        <p>
+                          Let <var>manifestRequest</var> be a new
+                          <a>request</a> whose <a>request url</a> is
+                          <var>manifestURL</var>, <a>client</a> is null,
+                          <a>credentials mode</a> is "<code>omit</code>", and
+                          <a>redirect mode</a> is "<code>error</code>".
+                        </p>
+                      </li>
+                      <li>
+                        <p>
+                          <a>Fetch</a> <var>manifestRequest</var>. To
+                          <a>process response end-of-body</a> with the
+                          <a>response</a> <var>manifestResponse</var>:
+                        </p>
+                        <ol>
+                          <li>
+                            <p>
+                              If <var>manifestResponse</var> is a <a>network
+                              error</a> or <var>manifestResponse</var>’s
+                              <a>status</a> is not an <a>ok status</a>,
+                              <a>continue</a>.
+                            </p>
+                          </li>
+                          <li>
+                            <p>
+                              Let <var>body</var> be
+                              <var>manifestResponse</var>’s <a>body</a>.
+                            </p>
+                          </li>
+                          <li>
+                            <p>
+                              If <var>body</var> is null, <a>continue</a>.
+                            </p>
+                          </li>
+                          <li>
+                            <p>
+                              Let <var>reader</var> be the result of <a>getting
+                              a reader</a> from <var>body</var>.
+                            </p>
+                          </li>
+                          <li>
+                            <p>
+                              Let <var>promise</var> be the result of
+                              <a>reading all bytes</a> from <var>body</var>
+                              with <var>reader</var>.
+                            </p>
+                          </li>
+                          <li>
+                            <p>
+                              <a>Upon fulfillment</a> of <var>promise</var>
+                              with a <a>byte sequence</a> <var>bytes</var>,
+                              <a>map set</a>
+                              <var>manifestsMap</var>[<var>identifierURL</var>]
+                              to <var>bytes</var>.
+                            </p>
+                          </li>
+                        </ol>
+                      </li>
+                    </ol>
+                  </li>
+                </ol>
+              </li>
+            </ol>
+          </li>
+          <li>
+            <p>
+              Once all ongoing <a>fetch</a> algorithms initiated by the above
+              steps are complete, including the specified <a>process
+              response</a> and <a>process response end-of-body</a> steps,
+              asynchronously complete this algorithm with
+              <var>manifestsMap</var>.
+            </p>
+          </li>
+        </ol>
+      </section>
+      <section>
+        <h2>
+          <dfn data-lt="validating and parsing" id=
+          "validating-and-parsing">Validating and parsing payment method
+          manifests</dfn>
+        </h2>
+        <p>
+          A <dfn id="parsed-payment-method-manifest">parsed payment method
+          manifest</dfn> is a <a>struct</a> containing two fields:
+        </p>
+        <dl>
+          <dt>
+            <dfn>default applications</dfn>
+          </dt>
+          <dd>
+            <p>
+              An <a>ordered set</a> of <a>URLs</a>, possibly empty
+            </p>
+          </dd>
+          <dt>
+            <dfn id=
+            "parsed-payment-method-manifest-supported-origins">supported
+            origins</dfn>
+          </dt>
+          <dd>
+            <p>
+              Either the string "<code>*</code>", or an <a>ordered set</a> of
+              <a>origins</a>
+            </p>
+          </dd>
+        </dl>
+        <p>
+          To <dfn id="validate-and-parse-the-payment-method-manifest">validate
+          and parse</dfn> a <a>byte sequence</a> <var>bytes</var> purporting to
+          contain a payment method manifest, perform the following steps. The
+          result will either be a <a>parsed payment method manifest</a>, or
+          failure.
+        </p>
+        <ol>
+          <li>
+            <p>
+              Let <var>string</var> be the result of <a>UTF-8 decoding</a>
+              <var>bytes</var>.
+            </p>
+          </li>
+          <li>
+            <p>
+              Let <var>parsed</var> be the result of invoking the initial value
+              of the <code class="idl"><a>parse()</a></code> method of the
+              <code class="idl"><a>%JSON%</a></code> object on
+              <var>string</var>, in a user-agent defined <a>JavaScript
+              realm</a>. If this throws an exception, return failure.
+            </p>
+          </li>
+          <li>
+            <p>
+              If <a>Type</a>(<var>parsed</var>) is not Object, return failure.
+            </p>
+          </li>
+          <li>
+            <p>
+              Let <var>defaultApps</var> be an empty <a>ordered set</a>.
+            </p>
+          </li>
+          <li>
+            <p>
+              Let <var>defaultAppsValue</var> be <a>Get</a>(<var>parsed</var>,
+              "default_applications").
+            </p>
+          </li>
+          <li>
+            <p>
+              If <var>defaultAppsValue</var> is not undefined:
+            </p>
+            <ol>
+              <li>
+                <p>
+                  If <a>IsArray</a>(<var>defaultAppsValue</var>) is false,
+                  return failure.
+                </p>
+              </li>
+              <li>
+                <p>
+                  Let <var>defaultAppsList</var> be
+                  <a>CreateListFromArrayLike</a>(<var>defaultAppsValue</var>, «
+                  String »). If this throws an exception, return failure.
+                </p>
+              </li>
+              <li>
+                <p>
+                  If the <a>list size</a> of <var>defaultAppsList</var> is 0,
+                  return failure.
+                </p>
+              </li>
+              <li>
+                <p>
+                  <a>For each</a> <var>defaultAppString</var> in
+                  <var>defaultAppsList</var>:
+                </p>
+                <ol>
+                  <li>
+                    <p>
+                      Let <var>defaultAppURL</var> be the result of <a>basic
+                      URL parsing</a> <var>defaultAppString</var>. If the
+                      result is failure, return failure.
+                    </p>
+                  </li>
+                  <li>
+                    <p>
+                      If <var>defaultAppURL</var>’s <a>scheme</a> is not
+                      "<code>https</code>", return failure.
+                    </p>
+                  </li>
+                  <li>
+                    <p>
+                      <a>Set append</a> <var>defaultAppURL</var> to
+                      <var>defaultApps</var>.
+                    </p>
+                  </li>
+                </ol>
+              </li>
+            </ol>
+          </li>
+          <li>
+            <p>
+              Let <var>supportedOrigins</var> be an empty <a>ordered set</a>.
+            </p>
+          </li>
+          <li>
+            <p>
+              Let <var>supportedOriginsValue</var> be
+              <a>Get</a>(<var>parsed</var>, "supported_origins").
+            </p>
+          </li>
+          <li>
+            <p>
+              If <var>supportedOriginsValue</var> is "<code>*</code>", set
+              <var>supportedOrigins</var> to "<code>*</code>".
+            </p>
+          </li>
+          <li>
+            <p>
+              Otherwise, if <var>supportedOriginsValue</var> is not undefined:
+            </p>
+            <ol>
+              <li>
+                <p>
+                  If <a>IsArray</a>(<var>supportedOriginsValue</var>) is false,
+                  return failure.
+                </p>
+              </li>
+              <li>
+                <p>
+                  Let <var>supportedOriginsList</var> be
+                  <a>CreateListFromArrayLike</a>(<var>supportedOriginsValue</var>,
+                  « String »). If this throws an exception, return failure.
+                </p>
+              </li>
+              <li>
+                <p>
+                  If the <a>list size</a> of <var>supportedOriginsList</var> is
+                  0, return failure.
+                </p>
+              </li>
+              <li>
+                <p>
+                  <a>For each</a> <var>supportedOriginString</var> in
+                  <var>supportedOriginsList</var>:
+                </p>
+                <ol>
+                  <li>
+                    <p>
+                      Let <var>supportedOriginURL</var> be the result of
+                      <a>basic URL parsing</a>
+                      <var>supportedOriginString</var>. If the result is
+                      failure, return failure.
+                    </p>
+                  </li>
+                  <li>
+                    <p>
+                      If <var>supportedOriginURL</var>’s <a>scheme</a> is not
+                      "<code>https</code>", return failure.
+                    </p>
+                  </li>
+                  <li>
+                    <p>
+                      If <var>supportedOriginURL</var>’s <a>username</a> or
+                      <a>password</a> are not the empty string, return failure.
+                    </p>
+                  </li>
+                  <li>
+                    <p>
+                      If <var>supportedOriginURL</var>’s <a>path</a>'s <a>list
+                      size</a> is not 0, return failure.
+                    </p>
+                  </li>
+                  <li>
+                    <p>
+                      If <var>supportedOriginURL</var>’s <a>query</a> or
+                      <a>fragment</a> are not null, return failure.
+                    </p>
+                  </li>
+                  <li>
+                    <p>
+                      <a>Set append</a> <var>supportedOriginURL</var>’s
+                      <a>origin</a> to <var>supportedOrigins</var>.
+                    </p>
+                  </li>
+                </ol>
+              </li>
+            </ol>
+          </li>
+          <li>
+            <p>
+              Return a new <a>parsed payment method manifest</a> with
+              <a>default applications</a> given by <var>defaultApps</var> and
+              <a>supported origins</a> given by <var>supportedOrigins</var>.
+            </p>
+          </li>
+        </ol>
+        <div class="note" role="note">
+          Empty arrays for "<code>default_applications</code>" or
+          "<code>supported_origins</code>" will cause parsing to fail. That is,
+          this is not a <a>valid payment method manifest</a>, and will be
+          rejected by the above algorithm:
+          <pre>
  {
    "default_applications": ["https://alicepay.com/pay/app/webappmanifest.json"],
    "supported_origins": []
  }
 </pre>
-</div>
-  </section>
-  <section id='fetch-wam'>
-    <h2>
-      Fetching web app manifests
-    </h2>
-   <p>Because the determination of <a>payment handlers</a> happens independent of any embedding HTML document,
-the procedure for obtaining a <a>web app manifest</a> that gives information about a default payment
-app is different from the usual <a>steps for obtaining a web app manifest</a>.</p>
-   <p>To <dfn>fetch the web app manifest</dfn> for a default payment app, given a <a>URL</a> <var>url</var>,
-perform the following steps. This algorithm will asynchronously complete with either a <a>scalar value string</a> or failure.</p>
-   <ol>
-    <li>
-     <p>Let <var>Request</var> be a new <a>request</a> whose <a>request url</a> is <var>url</var>, <a>client</a> is null, <a>credentials mode</a> is "<code>omit</code>", and <a>redirect mode</a> is
- "<code>error</code>".</p>
-    <li>
-     <p><a>Fetch</a> <var>request</var>. To <a>process response end-of-body</a> with the <a>response</a> <var>response</var>:</p>
-     <ol>
-      <li>
-       <p>If <var>response</var> is a <a>network error</a> or <var>response</var>’s <a>status</a> is not an <a>ok status</a>, asynchronously complete this algorithm with failure.</p>
-     </ol>
-     <ol>
-      <li>
-       <p>Let <var>body</var> be <var>response</var>’s <a>body</a>.</p>
-      <li>
-       <p>If <var>body</var> is null, asynchronously complete this algorithm with failure.</p>
-      <li>
-       <p>Let <var>reader</var> be the result of <a>getting a reader</a> from <var>body</var>.</p>
-      <li>
-       <p>Let <var>promise</var> be the result of <a>reading all bytes</a> from <var>body</var> with <var>reader</var>.</p>
-      <li>
-       <p><a>Upon fulfillment</a> of <var>promise</var> with a <a>byte sequence</a> <var>bytes</var>, asynchronously complete
-  this algorithm with the result of <a>UTF-8 decoding</a> <var>bytes</var>.</p>
-      <li>
-       <p><a>Upon rejection</a> of <var>promise</var>, asynchronously complete this algorithm with failure.</p>
-     </ol>
-   </ol>
-  </section>
-</section>
-<section id='iana'>
-  <h2>
-    IANA considerations
-  </h2>
-  <section id='payment-method-manifest-link'>
-    <h2>
-      The payment-method-manifest link relation
-    </h2>
-
-   <p>This registration is for community review and will be submitted to the IESG for review, approval,
-and registration with IANA.</p>
-   <dl>
-    <dt>Relation name
-    <dd>
-     <p>payment-method-manifest</p>
-    <dt>Description
-    <dd>
-     <p>Links to a payment method manifest, which describes a specific <a>payment method</a> within the Web
- Payments ecosystem.</p>
-    <dt>Reference
-    <dd>
-     <p><a href="https://github.com/w3c/payment-method-manifest/">https://github.com/w3c/payment-method-manifest/</a></p>
-    <dt>Notes
-    <dd>
-     <p>See <a href="#fetch-pmm">§3.2 Fetching payment method manifests</a> for the specific manner in which such links are expected to be fetched, and <a href="#ingest">§3.1 Ingesting payment method manifests</a> for the larger context in which they are used.</p>
-   </dl>
-  </section>
-</section>
-<section id="dependencies">
+        </div>
+      </section>
+      <section id='fetch-wam'>
+        <h2>
+          Fetching web app manifests
+        </h2>
+        <p>
+          Because the determination of <a>payment handlers</a> happens
+          independent of any embedding HTML document, the procedure for
+          obtaining a <a>web app manifest</a> that gives information about a
+          default payment app is different from the usual <a>steps for
+          obtaining a web app manifest</a>.
+        </p>
+        <p>
+          To <dfn>fetch the web app manifest</dfn> for a default payment app,
+          given a <a>URL</a> <var>url</var>, perform the following steps. This
+          algorithm will asynchronously complete with either a <a>scalar value
+          string</a> or failure.
+        </p>
+        <ol>
+          <li>
+            <p>
+              Let <var>Request</var> be a new <a>request</a> whose <a>request
+              url</a> is <var>url</var>, <a>client</a> is null, <a>credentials
+              mode</a> is "<code>omit</code>", and <a>redirect mode</a> is
+              "<code>error</code>".
+            </p>
+          </li>
+          <li>
+            <p>
+              <a>Fetch</a> <var>request</var>. To <a>process response
+              end-of-body</a> with the <a>response</a> <var>response</var>:
+            </p>
+            <ol>
+              <li>
+                <p>
+                  If <var>response</var> is a <a>network error</a> or
+                  <var>response</var>’s <a>status</a> is not an <a>ok
+                  status</a>, asynchronously complete this algorithm with
+                  failure.
+                </p>
+              </li>
+            </ol>
+            <ol>
+              <li>
+                <p>
+                  Let <var>body</var> be <var>response</var>’s <a>body</a>.
+                </p>
+              </li>
+              <li>
+                <p>
+                  If <var>body</var> is null, asynchronously complete this
+                  algorithm with failure.
+                </p>
+              </li>
+              <li>
+                <p>
+                  Let <var>reader</var> be the result of <a>getting a
+                  reader</a> from <var>body</var>.
+                </p>
+              </li>
+              <li>
+                <p>
+                  Let <var>promise</var> be the result of <a>reading all
+                  bytes</a> from <var>body</var> with <var>reader</var>.
+                </p>
+              </li>
+              <li>
+                <p>
+                  <a>Upon fulfillment</a> of <var>promise</var> with a <a>byte
+                  sequence</a> <var>bytes</var>, asynchronously complete this
+                  algorithm with the result of <a>UTF-8 decoding</a>
+                  <var>bytes</var>.
+                </p>
+              </li>
+              <li>
+                <p>
+                  <a>Upon rejection</a> of <var>promise</var>, asynchronously
+                  complete this algorithm with failure.
+                </p>
+              </li>
+            </ol>
+          </li>
+        </ol>
+      </section>
+    </section>
+    <section id='iana'>
+      <h2>
+        IANA considerations
+      </h2>
+      <section id='payment-method-manifest-link'>
+        <h2>
+          The payment-method-manifest link relation
+        </h2>
+        <p>
+          This registration is for community review and will be submitted to
+          the IESG for review, approval, and registration with IANA.
+        </p>
+        <dl>
+          <dt>
+            Relation name
+          </dt>
+          <dd>
+            <p>
+              payment-method-manifest
+            </p>
+          </dd>
+          <dt>
+            Description
+          </dt>
+          <dd>
+            <p>
+              Links to a payment method manifest, which describes a specific
+              <a>payment method</a> within the Web Payments ecosystem.
+            </p>
+          </dd>
+          <dt>
+            Reference
+          </dt>
+          <dd>
+            <p>
+              <a href=
+              "https://github.com/w3c/payment-method-manifest/">https://github.com/w3c/payment-method-manifest/</a>
+            </p>
+          </dd>
+          <dt>
+            Notes
+          </dt>
+          <dd>
+            <p>
+              See <a href="#fetch-pmm">§3.2 Fetching payment method
+              manifests</a> for the specific manner in which such links are
+              expected to be fetched, and <a href="#ingest">§3.1 Ingesting
+              payment method manifests</a> for the larger context in which they
+              are used.
+            </p>
+          </dd>
+        </dl>
+      </section>
+    </section>
+    <section id="dependencies">
       <h2>
         Dependencies
       </h2>
@@ -459,169 +959,194 @@ and registration with IANA.</p>
         <dt>
           App Manifest
         </dt>
-	<dd>
-	  The terms
-	  <dfn data-lt="web app manifests" data-cite="!appmanifest#dfn-manifest">web app manifest</dfn>,
-	  <dfn data-cite="!appmanifest#dfn-manifest-url">manifest URL</dfn>,
-	  <dfn data-cite="!appmanifest#dfn-steps-for-obtaining-a-manifest">steps for obtaining a web app manifest</dfn>,
-	  <dfn data-cite="!appmanifest#dfn-steps-for-processing-a-manifest">steps for processing a web app manifest</dfn>,
-	  <dfn data-cite="!appmanifest#dfn-processed-manifest">processed web app manifest</dfn>
-	  are defined in [[!appmanifest]].
-	</dd>
+        <dd>
+          The terms <dfn data-lt="web app manifests" data-cite=
+          "!appmanifest#dfn-manifest">web app manifest</dfn>, <dfn data-cite=
+          "!appmanifest#dfn-manifest-url">manifest URL</dfn>, <dfn data-cite=
+          "!appmanifest#dfn-steps-for-obtaining-a-manifest">steps for obtaining
+          a web app manifest</dfn>, <dfn data-cite=
+          "!appmanifest#dfn-steps-for-processing-a-manifest">steps for
+          processing a web app manifest</dfn>, <dfn data-cite=
+          "!appmanifest#dfn-processed-manifest">processed web app
+          manifest</dfn> are defined in [[!appmanifest]].
+        </dd>
         <dt>
           ECMASCRIPT
         </dt>
-	<dd>
-	  The terms
-	  <dfn data-cite="!ECMASCRIPT#sec-get-o-p">Get</dfn>,
-
-	  <dfn data-cite="!ECMASCRIPT#sec-isarray">IsArray</dfn>,
-	  <dfn data-cite="!ECMASCRIPT#sec-createlistfromarraylike">CreateListFromArrayLike</dfn>,	  
-	  <dfn data-cite="!ECMASCRIPT#sec-json.parse">parse()</dfn>,
-	  <dfn data-cite="!ECMASCRIPT#sec-json-object">%JSON%</dfn>,
-	  <dfn data-cite="!ECMASCRIPT#realm">JavaScript realm</dfn>,
-	  <dfn data-cite="!ECMASCRIPT#sec-ecmascript-data-types-and-values">Type</dfn>,	  	  
-	  are defined in [[!ECMASCRIPT]].
-	</dd>
+        <dd>
+          The terms <dfn data-cite="!ECMASCRIPT#sec-get-o-p">Get</dfn>,
+          <dfn data-cite="!ECMASCRIPT#sec-isarray">IsArray</dfn>,
+          <dfn data-cite=
+          "!ECMASCRIPT#sec-createlistfromarraylike">CreateListFromArrayLike</dfn>,
+          <dfn data-cite="!ECMASCRIPT#sec-json.parse">parse()</dfn>,
+          <dfn data-cite="!ECMASCRIPT#sec-json-object">%JSON%</dfn>,
+          <dfn data-cite="!ECMASCRIPT#realm">JavaScript realm</dfn>,
+          <dfn data-cite=
+          "!ECMASCRIPT#sec-ecmascript-data-types-and-values">Type</dfn>, are
+          defined in [[!ECMASCRIPT]].
+        </dd>
         <dt>
           ENCODING
         </dt>
-	<dd>
-	  The terms <dfn data-lt="utf-8 encoded" data-cite="!ENCODING#utf-8">UTF-8 encoding</dfn>,
-	  <dfn data-cite="!ENCODING#utf-8-decode">UTF-8 decoding</dfn>
-	  are defined in [[!ENCODING]].
-	</dd>
+        <dd>
+          The terms <dfn data-lt="utf-8 encoded" data-cite=
+          "!ENCODING#utf-8">UTF-8 encoding</dfn>, <dfn data-cite=
+          "!ENCODING#utf-8-decode">UTF-8 decoding</dfn> are defined in
+          [[!ENCODING]].
+        </dd>
         <dt>
           FETCH
         </dt>
-	<dd>
-	  The terms
-	  <dfn data-cite="!FETCH#concept-fetch">fetch</dfn>,
-	  <dfn data-cite="!FETCH#concept-request">request</dfn>,
-	  <dfn data-cite="!FETCH#concept-request-method">method</dfn>,
-	  <dfn data-cite="!FETCH#concept-request-url">request url</dfn>,
-	  <dfn data-cite="!FETCH#concept-response-url">response url</dfn>,	  
-	  <dfn data-cite="!FETCH#concept-request-client">client</dfn>,
-	  <dfn data-cite="!FETCH#concept-request-credentials-mode">credentials mode</dfn>,
-	  <dfn data-cite="!FETCH#concept-request-redirect-mode">redirect mode</dfn>,
-	  <dfn data-cite="!FETCH#concept-process-response">process response</dfn>,
-	  <dfn data-cite="!FETCH#concept-response">response</dfn>,
-	  <dfn data-cite="!FETCH#concept-response-status">status</dfn>,
-	  <dfn data-cite="!FETCH#concept-network-error">network error</dfn>,
-	  <dfn data-cite="!FETCH#ok-status">ok status</dfn>,
-	  <dfn data-cite="!FETCH#concept-response-header-list">header list</dfn>,
-	  <dfn data-cite="!FETCH#extract-header-list-value">extracting header list values</dfn>,
-	  <dfn data-cite="!FETCH#concept-response-body">body</dfn>,
-	  <dfn data-cite="!FETCH#process-response-end-of-body">process response end-of-body</dfn>,
-	  <dfn data-cite="!FETCH#concept-get-reader">getting a reader</dfn>,
-	  <dfn data-cite="!FETCH#concept-read-all-bytes-from-readablestream">reading all bytes</dfn>,	  
-	  are defined in [[!FETCH]].
-	</dd>
+        <dd>
+          The terms <dfn data-cite="!FETCH#concept-fetch">fetch</dfn>,
+          <dfn data-cite="!FETCH#concept-request">request</dfn>,
+          <dfn data-cite="!FETCH#concept-request-method">method</dfn>,
+          <dfn data-cite="!FETCH#concept-request-url">request url</dfn>,
+          <dfn data-cite="!FETCH#concept-response-url">response url</dfn>,
+          <dfn data-cite="!FETCH#concept-request-client">client</dfn>,
+          <dfn data-cite="!FETCH#concept-request-credentials-mode">credentials
+          mode</dfn>, <dfn data-cite=
+          "!FETCH#concept-request-redirect-mode">redirect mode</dfn>,
+          <dfn data-cite="!FETCH#concept-process-response">process
+          response</dfn>, <dfn data-cite=
+          "!FETCH#concept-response">response</dfn>, <dfn data-cite=
+          "!FETCH#concept-response-status">status</dfn>, <dfn data-cite=
+          "!FETCH#concept-network-error">network error</dfn>, <dfn data-cite=
+          "!FETCH#ok-status">ok status</dfn>, <dfn data-cite=
+          "!FETCH#concept-response-header-list">header list</dfn>,
+          <dfn data-cite="!FETCH#extract-header-list-value">extracting header
+          list values</dfn>, <dfn data-cite=
+          "!FETCH#concept-response-body">body</dfn>, <dfn data-cite=
+          "!FETCH#process-response-end-of-body">process response
+          end-of-body</dfn>, <dfn data-cite="!FETCH#concept-get-reader">getting
+          a reader</dfn>, <dfn data-cite=
+          "!FETCH#concept-read-all-bytes-from-readablestream">reading all
+          bytes</dfn>, are defined in [[!FETCH]].
+        </dd>
         <dt>
-          HTML 
+          HTML
         </dt>
-	<dd>
-	  The term <dfn data-cite="!HTML#ascii-serialisation-of-an-origin">serialization</dfn> is defined in [[!HTML]].
-	</dd>
+        <dd>
+          The term <dfn data-cite=
+          "!HTML#ascii-serialisation-of-an-origin">serialization</dfn> is
+          defined in [[!HTML]].
+        </dd>
         <dt>
           INFRA
         </dt>
-	<dd>
-	  The terms
-	  <dfn data-cite="!INFRA#list-iterate">For each</dfn>,
-	  <dfn data-cite="!INFRA#list-size">list size</dfn>,
-	  <dfn data-cite="!INFRA#set-append">set append</dfn>,
-	  <dfn data-cite="!INFRA#map-set">map set</dfn>,
-	  <dfn data-cite="!INFRA#iteration-continue">continue</dfn>,
-	  <dfn data-cite="!INFRA#iteration-break">break</dfn>,	  
-	  <dfn data-cite="!INFRA#ordered-set">ordered set</dfn>,
-	  <dfn data-cite="!INFRA#ordered-map">map</dfn>,
-	  <dfn data-cite="!INFRA#struct">struct</dfn>,
-	  <dfn data-cite="!INFRA#list">list</dfn>,
-	  <dfn data-lt="byte sequences" data-cite="!INFRA#javascript-string">JavaScript strings</dfn>,
-	  <dfn data-cite="!INFRA#byte-sequence">byte sequence</dfn>,
-	  <dfn data-cite="!INFRA#list-append">list append</dfn>,
-	  <dfn data-cite="!INFRA#ascii-case-insensitive">ASCII case-insensitive</dfn>,
-	  <dfn data-cite="!FETCH#scalar-value-string">scalar value string</dfn>, 	  
-	  are defined in [[!INFRA]].
-	</dd>
+        <dd>
+          The terms <dfn data-cite="!INFRA#list-iterate">For each</dfn>,
+          <dfn data-cite="!INFRA#list-size">list size</dfn>, <dfn data-cite=
+          "!INFRA#set-append">set append</dfn>, <dfn data-cite=
+          "!INFRA#map-set">map set</dfn>, <dfn data-cite=
+          "!INFRA#iteration-continue">continue</dfn>, <dfn data-cite=
+          "!INFRA#iteration-break">break</dfn>, <dfn data-cite=
+          "!INFRA#ordered-set">ordered set</dfn>, <dfn data-cite=
+          "!INFRA#ordered-map">map</dfn>, <dfn data-cite=
+          "!INFRA#struct">struct</dfn>, <dfn data-cite=
+          "!INFRA#list">list</dfn>, <dfn data-lt="byte sequences" data-cite=
+          "!INFRA#javascript-string">JavaScript strings</dfn>, <dfn data-cite=
+          "!INFRA#byte-sequence">byte sequence</dfn>, <dfn data-cite=
+          "!INFRA#list-append">list append</dfn>, <dfn data-cite=
+          "!INFRA#ascii-case-insensitive">ASCII case-insensitive</dfn>,
+          <dfn data-cite="!FETCH#scalar-value-string">scalar value
+          string</dfn>, are defined in [[!INFRA]].
+        </dd>
         <dt>
           Payment Method Identifiers
         </dt>
-	<dd>
+        <dd>
           The term <dfn data-lt="payment method identifiers">payment method
           identifier</dfn> is defined by the Payment Method Identifier
           specification [[!payment-method-id]].
-	</dd>
+        </dd>
         <dt>
           Payment Request API
         </dt>
-	<dd>
+        <dd>
           The terms <dfn data-lt="payment methods" data-cite=
-			 "!payment-request#dfn-payment-method">payment method</dfn>,
-	  <dfn data-lt="payment handlers" data-cite=
+          "!payment-request#dfn-payment-method">payment method</dfn>,
+          <dfn data-lt="payment handlers" data-cite=
           "!payment-request#dfn-payment-handler">payment handler</dfn>,
           <dfn data-cite=
           "!payment-request#dom-paymentrequest">PaymentRequest</dfn>,
           <dfn data-cite=
-          "!payment-request#dom-paymentresponse">PaymentResponse</dfn> are defined by the
-          Payment Request API specification [[!payment-request]].
-	</dd>
+          "!payment-request#dom-paymentresponse">PaymentResponse</dfn> are
+          defined by the Payment Request API specification
+          [[!payment-request]].
+        </dd>
         <dt>
           Promises Guide
         </dt>
-	<dd>
-	  The terms
-	  <dfn data-cite="!promises-guide#upon-fulfillment">upon fulfillment</dfn>,
-	  <dfn data-cite="!promises-guide#upon-rejection">upon rejection</dfn>,	  
-          are defined in [[!promises-guide]].
-	</dd>
+        <dd>
+          The terms <dfn data-cite="!promises-guide#upon-fulfillment">upon
+          fulfillment</dfn>, <dfn data-cite=
+          "!promises-guide#upon-rejection">upon rejection</dfn>, are defined in
+          [[!promises-guide]].
+        </dd>
         <dt>
           RFC6454
         </dt>
         <dd>
-          The term <dfn data-lt="origins">origin</dfn> is defined in [[!RFC6454]].
+          The term <dfn data-lt="origins">origin</dfn> is defined in
+          [[!RFC6454]].
         </dd>
         <dt>
           URL
         </dt>
-	<dd>
-          The terms
-	  <dfn data-lt="absolute-URL strings" data-cite="!URL#absolute-url-string">absolute-URL string</dfn>,
-	  <dfn data-lt="urls" data-cite="!URL#URL">URL</dfn>,
-	  <dfn data-cite="!URL#concept-url-scheme">scheme</dfn>,
-	  <dfn data-cite="!URL#concept-url-username">username</dfn>,
-	  <dfn data-cite="!URL#concept-url-password">password</dfn>,
-	  <dfn data-cite="!URL#concept-url-query">query</dfn>,
-	  <dfn data-cite="!URL#concept-url-path">path</dfn>,
-	  <dfn data-cite="!URL#concept-url-fragment">fragment</dfn>,	  	  
-	  <dfn data-cite="!URL#concept-basic-url-parser">basic URL parsing</dfn>,
-	  are defined in [[!URL]].
-	</dd>
+        <dd>
+          The terms <dfn data-lt="absolute-URL strings" data-cite=
+          "!URL#absolute-url-string">absolute-URL string</dfn>, <dfn data-lt=
+          "urls" data-cite="!URL#URL">URL</dfn>, <dfn data-cite=
+          "!URL#concept-url-scheme">scheme</dfn>, <dfn data-cite=
+          "!URL#concept-url-username">username</dfn>, <dfn data-cite=
+          "!URL#concept-url-password">password</dfn>, <dfn data-cite=
+          "!URL#concept-url-query">query</dfn>, <dfn data-cite=
+          "!URL#concept-url-path">path</dfn>, <dfn data-cite=
+          "!URL#concept-url-fragment">fragment</dfn>, <dfn data-cite=
+          "!URL#concept-basic-url-parser">basic URL parsing</dfn>, are defined
+          in [[!URL]].
+        </dd>
       </dl>
     </section>
-<section id='conformance'>
-   <p> Conformance requirements are expressed with a combination of descriptive assertions and RFC 2119 terminology.
-            The key words “MUST”, “MUST NOT”, “REQUIRED”, “SHALL”, “SHALL NOT”, “SHOULD”, “SHOULD NOT”, “RECOMMENDED”, “MAY”, and “OPTIONAL”
-            in the normative parts of this document
-            are to be interpreted as described in RFC 2119.
-            However, for readability,
-            these words do not appear in all uppercase letters in this specification. </p>
-   <p> All of the text of this specification is normative
-            except sections explicitly marked as non-normative, examples, and notes. [[!RFC2119]] </p>
-   <p> Examples in this specification are introduced with the words “for example”
-            or are set apart from the normative text with <code>class="example"</code>, like this: </p>
-   <div class="example" id="example-example">This is an example of an informative example. </div>
-   <p> Informative notes begin with the word “Note”
-            and are set apart from the normative text with <code>class="note"</code>, like this: </p>
-  <p class="note" role="note"> Note, this is an informative note. </p>
-</section>
-<section id='acknowledgments' class='appendix'>
-  <h2>
-    Acknowledgments
-  </h2>
-  <p><a href="#processing-model">§3 Processing model</a> is based heavily on algorithms originally outlined by Rouslan Solomakhin.</p>
-</section>
-
- </body>
- </html>
+    <section id='conformance'>
+      <p>
+        Conformance requirements are expressed with a combination of
+        descriptive assertions and RFC 2119 terminology. The key words “MUST”,
+        “MUST NOT”, “REQUIRED”, “SHALL”, “SHALL NOT”, “SHOULD”, “SHOULD NOT”,
+        “RECOMMENDED”, “MAY”, and “OPTIONAL” in the normative parts of this
+        document are to be interpreted as described in RFC 2119. However, for
+        readability, these words do not appear in all uppercase letters in this
+        specification.
+      </p>
+      <p>
+        All of the text of this specification is normative except sections
+        explicitly marked as non-normative, examples, and notes. [[!RFC2119]]
+      </p>
+      <p>
+        Examples in this specification are introduced with the words “for
+        example” or are set apart from the normative text with
+        <code>class="example"</code>, like this:
+      </p>
+      <div class="example" id="example-example">
+        This is an example of an informative example.
+      </div>
+      <p>
+        Informative notes begin with the word “Note” and are set apart from the
+        normative text with <code>class="note"</code>, like this:
+      </p>
+      <p class="note" role="note">
+        Note, this is an informative note.
+      </p>
+    </section>
+    <section id='acknowledgments' class='appendix'>
+      <h2>
+        Acknowledgments
+      </h2>
+      <p>
+        <a href="#processing-model">§3 Processing model</a> is based heavily on
+        algorithms originally outlined by Rouslan Solomakhin.
+      </p>
+    </section>
+  </body>
+</html>
